@@ -32,50 +32,7 @@ class BarChartTransactionState extends State<BarChartTransaction> {
   Widget build(BuildContext context) {
     if (widget.weeklyTransaction.isEmpty) return Container();
 
-    // var filteredIncome = widget.weeklyTransaction.reduce((current, next) => current.income > next.income ? current : next);
-    // var filteredExpenses = widget.weeklyTransaction.reduce((current, next) => current.expenses > next.expenses ? current : next);
-    // var maxIncome = filteredIncome.income == 0 ? 1 : filteredIncome.income;
-    // var maxExpenses = filteredExpenses.expenses == 0 ? 1 : filteredExpenses.expenses;
-    // var totalMax = maxIncome > maxExpenses ? maxIncome : maxExpenses;
-
-    final barGroup1 = makeGroupData(
-        0,
-        calculatePoint(widget.weeklyTransaction[0].expenses),
-        calculatePoint(widget.weeklyTransaction[0].income));
-    final barGroup2 = makeGroupData(
-        1,
-        calculatePoint(widget.weeklyTransaction[1].expenses),
-        calculatePoint(widget.weeklyTransaction[1].income));
-    final barGroup3 = makeGroupData(
-        2,
-        calculatePoint(widget.weeklyTransaction[2].expenses),
-        calculatePoint(widget.weeklyTransaction[2].income));
-    final barGroup4 = makeGroupData(
-        3,
-        calculatePoint(widget.weeklyTransaction[3].expenses),
-        calculatePoint(widget.weeklyTransaction[3].income));
-    final barGroup5 = makeGroupData(
-        4,
-        calculatePoint(widget.weeklyTransaction[4].expenses),
-        calculatePoint(widget.weeklyTransaction[4].income));
-    final barGroup6 = makeGroupData(
-        5,
-        calculatePoint(widget.weeklyTransaction[5].expenses),
-        calculatePoint(widget.weeklyTransaction[5].income));
-    final barGroup7 = makeGroupData(
-        6,
-        calculatePoint(widget.weeklyTransaction[6].expenses),
-        calculatePoint(widget.weeklyTransaction[6].income));
-
-    final items = [
-      barGroup1,
-      barGroup2,
-      barGroup3,
-      barGroup4,
-      barGroup5,
-      barGroup6,
-      barGroup7,
-    ];
+    final items = getBarGroups();
 
     rawBarGroups = items;
 
@@ -203,6 +160,21 @@ class BarChartTransactionState extends State<BarChartTransaction> {
         ),
       ),
     );
+  }
+
+  // Generate bar groups dynamically based on weeklyTransaction data
+  List<BarChartGroupData> getBarGroups() {
+    List<BarChartGroupData> barGroups = [];
+
+    for (int i = 0; i < widget.weeklyTransaction.length; i++) {
+      double expenses = widget.weeklyTransaction[i].expenses;
+      double income = widget.weeklyTransaction[i].income;
+
+      barGroups.add(
+          makeGroupData(i, calculatePoint(expenses), calculatePoint(income)));
+    }
+
+    return barGroups;
   }
 
   double calculatePoint(double transaction) {
