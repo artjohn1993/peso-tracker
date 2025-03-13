@@ -15,6 +15,9 @@ var kIncomeColor = const Color.fromARGB(255, 25, 117, 28);
 void main() {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  
+    
+
   runApp(const MyApp());
 }
 

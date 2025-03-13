@@ -27,9 +27,19 @@ class DatabaseService {
         ${Table_Tracker.remarks.name} TEXT,
         ${Table_Tracker.amount.name} TEXT NOT NULL,
         ${Table_Tracker.category.name} TEXT NOT NULL,
-        ${Table_Tracker.imagePath.name} TEXT NOT NULL
-    )
+        ${Table_Tracker.imagePath.name} TEXT NOT NULL)
   ''');
+
+        db.execute('''
+    CREATE TABLE ${Trackerdb.Table_Settings.name} (
+        ${Table_Settings.id.name} int PRIMARY KEY,
+        ${Table_Settings.authentication.name} int)
+  ''');
+
+   db.execute('''
+    INSERT INTO ${Trackerdb.Table_Settings.name} VALUES (1,1)
+  ''');
+
       },
     );
     return database;
@@ -39,6 +49,24 @@ class DatabaseService {
     if (_db != null) return _db!;
     _db = await getDatabase();
     return _db!;
+  }
+
+  void updateSetting(int authentication) async {
+    var db = await database;
+    await db.update(
+        Trackerdb.Table_Settings.name,
+        {
+          Table_Settings.authentication.name: authentication
+        },
+        where: '${Table_Settings.id.name} = ?',
+        whereArgs: [1]);
+  }
+
+  Future<bool> getSettings() async {
+    final db = await database;
+    final data = await db.query(Trackerdb.Table_Settings.name);
+    List<int> settings = data.map((item) => item[Table_Settings.authentication.name] as int).toList();
+    return settings.isNotEmpty ? (settings[0] == 0 ? true : false) : false;
   }
 
   void addTransaction(TransactionModel transaction) async {
@@ -52,7 +80,6 @@ class DatabaseService {
       Table_Tracker.category.name: transaction.category.category.name,
       Table_Tracker.imagePath.name: transaction.category.imagepath,
     });
-    getTransaction();
   }
 
   Future<List<TransactionModel>> getTransaction() async {
@@ -74,35 +101,31 @@ class DatabaseService {
                   imagepath: item[Table_Tracker.imagePath.name] as String)),
         )
         .toList();
-    
-    transactionList.sort((a,b) => b.date.compareTo(a.date));
+
+    transactionList.sort((a, b) => b.date.compareTo(a.date));
     print(transactionList);
     return transactionList;
   }
 
   void updateTransaction(TransactionModel transaction) async {
     var db = await database;
-    await db.update(Trackerdb.Table_Transaction.name, {
-      Table_Tracker.date.name: transaction.date.toString(),
-      Table_Tracker.transactionType.name: transaction.transactionType.name,
-      Table_Tracker.remarks.name: transaction.remarks,
-      Table_Tracker.amount.name: transaction.amount.toString(),
-      Table_Tracker.category.name: transaction.category.category.name,
-      Table_Tracker.imagePath.name: transaction.category.imagepath,
-    },where: '${Table_Tracker.id.name} = ?',
-    whereArgs: [
-      transaction.id
-    ]);
+    await db.update(
+        Trackerdb.Table_Transaction.name,
+        {
+          Table_Tracker.date.name: transaction.date.toString(),
+          Table_Tracker.transactionType.name: transaction.transactionType.name,
+          Table_Tracker.remarks.name: transaction.remarks,
+          Table_Tracker.amount.name: transaction.amount.toString(),
+          Table_Tracker.category.name: transaction.category.category.name,
+          Table_Tracker.imagePath.name: transaction.category.imagepath,
+        },
+        where: '${Table_Tracker.id.name} = ?',
+        whereArgs: [transaction.id]);
   }
 
   void deleteTransaction(TransactionModel transaction) async {
     var db = await database;
-    await db.delete(
-      Trackerdb.Table_Transaction.name,
-      where: '${Table_Tracker.id.name} = ?',
-      whereArgs: [
-        transaction.id
-      ]
-    );
+    await db.delete(Trackerdb.Table_Transaction.name,
+        where: '${Table_Tracker.id.name} = ?', whereArgs: [transaction.id]);
   }
 }

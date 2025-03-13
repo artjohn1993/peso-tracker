@@ -1,6 +1,7 @@
 enum Trackerdb {
   Database_Tracker,
-  Table_Transaction
+  Table_Transaction,
+  Table_Settings
 }
 
 enum Table_Tracker {
@@ -11,4 +12,9 @@ enum Table_Tracker {
   amount,
   category,
   imagePath
+}
+
+enum Table_Settings {
+  id,
+  authentication
 }
