@@ -9,10 +9,10 @@ class TransactionNotifier extends StateNotifier<List<TransactionModel>> {
   TransactionNotifier() : super([]);
   final DatabaseService _database = DatabaseService.instance;
 
-
-
   void addTransaction(TransactionModel transaction) {
-    state = [transaction, ...state];
+    var tempState = [transaction, ...state];
+    tempState.sort((a, b) => b.date.compareTo(a.date));
+    state = tempState;
     _database.addTransaction(transaction);
   }
 
@@ -22,6 +22,8 @@ class TransactionNotifier extends StateNotifier<List<TransactionModel>> {
     if (index != null) {
       _database.updateTransaction(state[index]);
     }
+
+    state.sort((a, b) => b.date.compareTo(a.date));
   }
 
   void removeTransaction(TransactionModel transaction) {
@@ -35,6 +37,7 @@ class TransactionNotifier extends StateNotifier<List<TransactionModel>> {
     state = transactionlist;
   }
 
+  //will return the overall balance
   double get balance {
     var totalIncome = state
         .where((data) => data.transactionType == TransactionType.income)
@@ -46,6 +49,7 @@ class TransactionNotifier extends StateNotifier<List<TransactionModel>> {
     return totalIncome - totalExpenses;
   }
 
+  //return total income of the selected month
   double getTotalIncome(DateTime date) {
     return state
         .where((data) =>
@@ -55,6 +59,7 @@ class TransactionNotifier extends StateNotifier<List<TransactionModel>> {
         .fold(0.0, (total, income) => total + income.amount);
   }
 
+  //return total expenses of selected month
   double getTotalExpenses(DateTime date) {
     return state
         .where((data) =>
@@ -64,7 +69,6 @@ class TransactionNotifier extends StateNotifier<List<TransactionModel>> {
         .fold(0.0, (total, expenses) => total + expenses.amount);
   }
 }
-
 
 final transactionProvider =
     StateNotifierProvider<TransactionNotifier, List<TransactionModel>>((ref) {

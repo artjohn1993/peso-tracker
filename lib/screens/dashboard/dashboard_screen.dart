@@ -53,7 +53,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     transactionList = await database.getTransaction();
     ref
         .read(transactionProvider.notifier)
-        .updateTransaction(transactionList.reversed.toList(), null);
+        .updateTransaction(transactionList, null);
 
     layout = _selectLayout(0);
     //delay the display of splash screen

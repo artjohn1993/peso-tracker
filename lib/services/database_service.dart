@@ -74,6 +74,9 @@ class DatabaseService {
                   imagepath: item[Table_Tracker.imagePath.name] as String)),
         )
         .toList();
+    
+    transactionList.sort((a,b) => b.date.compareTo(a.date));
+    print(transactionList);
     return transactionList;
   }
 
